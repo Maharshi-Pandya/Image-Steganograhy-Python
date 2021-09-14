@@ -1,33 +1,13 @@
-import sys
 import cv2 as cv    # opencv
+import imageclass    # custom image class
 
-# interface for image
-class Image:
-    def __init__(self, file_path=None):
-        self.img_file_path = file_path
-        self.img = None
-
-    def read_img(self, read_flag):
-        if self.img_file_path is not None and read_flag is not None:
-            self.img = cv.imread(self.img_file_path, read_flag)
-            
-            if self.img is None:
-                sys.exit("Couldn't read the specified image")
-
-    def write_img(self, fname, file_format):
-        if self.img is not None:
-            cv.imwrite(f"{fname}.{file_format}", self.img)
-
-    def pixel_at(self, x, y):
-        if self.img is not None:
-            return self.img[x, y]
-
-
-# generate steganographic images
 class ImageStegano:
-    def __init__(self):
-        self.image = None
-        self.msg_to_hide: str = ""
+    """
+        Generate steganographic images using the LSB technique
+    """
+    def __init__(self, img=None, m2h=""):
+        self.image = img
+        self.msg_to_hide: str = m2h
         self._msg_bin: str = ""
 
     @property
@@ -42,11 +22,11 @@ class ImageStegano:
         self._msg_to_hide = msg
 
 
-image = Image()
-image.img_file_path = "ss.png"
+# init the image and read it
+image = imageclass.Image("testimage.jpeg")
 image.read_img(cv.IMREAD_COLOR)
 
-pixel = image.pixel_at(10, 30)
-print(pixel)
+# then pass it to stegano
+stegano = ImageStegano(image, m2h="Maharshi")
 
-image.write_img("ssfinal", "png")
+print(stegano.msg_to_hide)
